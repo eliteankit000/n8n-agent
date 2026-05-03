@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: n8n_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8npass
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: n8n_redis
+    restart: always
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      # Core
+      - NODE_ENV=production
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=Asia/Kolkata
+
+      # Security
+      - N8N_ENCRYPTION_KEY=supersecretkey123
+
+      # Database (Postgres)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npass
+
+      # Queue mode (IMPORTANT)
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+
+      # Basic auth (protect your app)
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=strongpassword
+
+    depends_on:
+      - postgres
+      - redis
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  worker:
+    image: n8nio/n8n:latest
+    container_name: n8n_worker
+    restart: always
+    command: worker
+    environment:
+      - NODE_ENV=production
+
+      # Same DB config
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npass
+
+      # Queue config
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+
+      - N8N_ENCRYPTION_KEY=supersecretkey123
+
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+  n8n_data:
