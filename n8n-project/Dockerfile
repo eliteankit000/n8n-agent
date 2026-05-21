@@ -1,5 +1,7 @@
 FROM n8nio/n8n:latest
 
+WORKDIR /home/node
+
 ENV NODE_ENV=production
 ENV N8N_PORT=10000
 ENV GENERIC_TIMEZONE=Asia/Kolkata
