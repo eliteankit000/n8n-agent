@@ -9,6 +9,12 @@ services:
       - key: NODE_ENV
         value: production
 
+      - key: PORT
+        value: 10000
+
+      - key: N8N_PORT
+        value: 10000
+
       - key: N8N_HOST
         value: n8n-main.onrender.com
 
@@ -17,9 +23,6 @@ services:
 
       - key: WEBHOOK_URL
         value: https://n8n-main.onrender.com/
-
-      - key: N8N_PORT
-        value: 10000
 
       - key: GENERIC_TIMEZONE
         value: Asia/Kolkata
@@ -56,20 +59,20 @@ services:
           name: n8n-db
           property: password
 
-      # Queue
+      # Queue Mode
       - key: EXECUTIONS_MODE
         value: queue
 
       - key: QUEUE_BULL_REDIS_HOST
         fromService:
-          name: n8n-redis
           type: redis
+          name: n8n-redis
           property: host
 
       - key: QUEUE_BULL_REDIS_PORT
         fromService:
-          name: n8n-redis
           type: redis
+          name: n8n-redis
           property: port
 
       # Auth
@@ -137,14 +140,14 @@ services:
 
       - key: QUEUE_BULL_REDIS_HOST
         fromService:
-          name: n8n-redis
           type: redis
+          name: n8n-redis
           property: host
 
       - key: QUEUE_BULL_REDIS_PORT
         fromService:
-          name: n8n-redis
           type: redis
+          name: n8n-redis
           property: port
 
       - key: N8N_ENCRYPTION_KEY
@@ -153,6 +156,7 @@ services:
   - type: redis
     name: n8n-redis
     plan: starter
+    ipAllowList: []
 
 databases:
   - name: n8n-db
