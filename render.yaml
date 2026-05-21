@@ -1,0 +1,148 @@
+services:
+  - type: web
+    name: n8n-main
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: N8N_HOST
+        value: your-app-name.onrender.com
+
+      - key: N8N_PROTOCOL
+        value: https
+
+      - key: WEBHOOK_URL
+        value: https://your-app-name.onrender.com/
+
+      - key: N8N_PORT
+        value: 10000
+
+      - key: GENERIC_TIMEZONE
+        value: Asia/Kolkata
+
+      # Encryption
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+
+      # Database
+      - key: DB_TYPE
+        value: postgresdb
+
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-db
+          property: host
+
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-db
+          property: port
+
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-db
+          property: database
+
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-db
+          property: user
+
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-db
+          property: password
+
+      # Queue
+      - key: EXECUTIONS_MODE
+        value: queue
+
+      - key: QUEUE_BULL_REDIS_HOST
+        fromService:
+          type: redis
+          name: n8n-redis
+          property: host
+
+      - key: QUEUE_BULL_REDIS_PORT
+        fromService:
+          type: redis
+          name: n8n-redis
+          property: port
+
+      # Auth
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: true
+
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+
+      - key: N8N_BASIC_AUTH_PASSWORD
+        sync: false
+
+  - type: worker
+    name: n8n-worker
+    env: docker
+    plan: starter
+    dockerfilePath: ./worker.Dockerfile
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: DB_TYPE
+        value: postgresdb
+
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-db
+          property: host
+
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-db
+          property: port
+
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-db
+          property: database
+
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-db
+          property: user
+
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-db
+          property: password
+
+      - key: EXECUTIONS_MODE
+        value: queue
+
+      - key: QUEUE_BULL_REDIS_HOST
+        fromService:
+          type: redis
+          name: n8n-redis
+          property: host
+
+      - key: QUEUE_BULL_REDIS_PORT
+        fromService:
+          type: redis
+          name: n8n-redis
+          property: port
+
+      - key: N8N_ENCRYPTION_KEY
+        sync: false
+
+databases:
+  - name: n8n-db
+    plan: starter
+
+  - name: n8n-redis
+    type: redis
+    plan: starter
