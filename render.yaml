@@ -143,6 +143,7 @@ databases:
   - name: n8n-db
     plan: starter
 
-  - name: n8n-redis
-    type: redis
+services:
+  - type: redis
+    name: n8n-redis
     plan: starter
